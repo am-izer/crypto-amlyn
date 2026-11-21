@@ -1,0 +1,326 @@
+:root {
+  --encre: #1A2238;     /* texte, indigo très foncé */
+  --papier: #EDEFF3;    /* fond, gris bleuté froid */
+  --blanc: #FFFFFF;
+  --laiton: #B3862F;    /* accent : la couleur des roues de chiffrement */
+  --acier: #6B7491;     /* texte secondaire */
+  --trait: #CDD2DD;     /* bordures */
+  --erreur: #B4443B;
+
+  --police: "Bricolage Grotesque", system-ui, sans-serif;
+  --mono: "JetBrains Mono", Consolas, monospace;
+}
+
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  background: var(--papier);
+  color: var(--encre);
+  font-family: var(--police);
+  font-size: 17px;
+  line-height: 1.5;
+}
+
+/* ---------- En-tête ---------- */
+.entete {
+  max-width: 1040px;
+  margin: 0 auto;
+  padding: 48px 24px 24px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+}
+
+.titre h1 {
+  margin: 0;
+  font-size: clamp(48px, 8vw, 88px);
+  font-weight: 800;
+  letter-spacing: -0.04em;
+  line-height: 0.95;
+}
+
+.titre p {
+  margin: 12px 0 0;
+  max-width: 30ch;
+  color: var(--acier);
+  font-size: 19px;
+}
+
+.roue {
+  width: clamp(150px, 22vw, 220px);
+  flex-shrink: 0;
+}
+
+.roue .anneau-ext { fill: var(--encre); }
+.roue .anneau-int { fill: var(--laiton); }
+.roue .centre     { fill: var(--papier); }
+.roue text {
+  font-family: var(--mono);
+  font-size: 10.5px;
+  font-weight: 600;
+  text-anchor: middle;
+  dominant-baseline: central;
+}
+.roue .ext text { fill: var(--papier); }
+.roue .int text { fill: var(--encre); }
+.roue .int { transition: transform 0.6s cubic-bezier(.3, 1.4, .5, 1); }
+.roue .repere { fill: var(--erreur); }
+.roue .cle-centre {
+  font-family: var(--police);
+  font-size: 30px;
+  font-weight: 800;
+  fill: var(--encre);
+}
+
+/* ---------- Onglets ---------- */
+.onglets {
+  max-width: 1040px;
+  margin: 0 auto;
+  padding: 0 24px;
+  display: flex;
+  gap: 4px;
+  border-bottom: 2px solid var(--encre);
+}
+
+.onglet {
+  font: 600 17px var(--police);
+  color: var(--acier);
+  background: none;
+  border: none;
+  padding: 12px 18px;
+  cursor: pointer;
+  border-radius: 8px 8px 0 0;
+}
+
+.onglet:hover { color: var(--encre); }
+
+.onglet.actif {
+  color: var(--papier);
+  background: var(--encre);
+}
+
+/* ---------- Panneaux ---------- */
+main {
+  max-width: 1040px;
+  margin: 0 auto;
+  padding: 28px 24px 16px;
+}
+
+.panneau { display: none; }
+.panneau.actif { display: block; }
+
+.explication {
+  margin: 0 0 24px;
+  max-width: 68ch;
+  color: var(--acier);
+}
+
+.atelier {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+}
+
+.zone {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+label {
+  font-weight: 600;
+  font-size: 15px;
+}
+
+textarea,
+input[type="text"] {
+  font: 16px var(--mono);
+  color: var(--encre);
+  background: var(--blanc);
+  border: 1.5px solid var(--trait);
+  border-radius: 6px;
+  padding: 12px;
+  width: 100%;
+}
+
+textarea { height: 130px; resize: vertical; margin-bottom: 8px; }
+
+textarea:focus,
+input[type="text"]:focus { outline: none; border-color: var(--encre); }
+
+.reglage {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.reglage input[type="range"] {
+  flex: 1;
+  accent-color: var(--laiton);
+}
+
+.reglage output {
+  font: 600 22px var(--mono);
+  min-width: 2ch;
+  text-align: right;
+}
+
+.ligne-cle {
+  display: flex;
+  gap: 8px;
+}
+
+.ligne-cle input { letter-spacing: 0.12em; }
+
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 8px;
+}
+
+/* ---------- Boutons ---------- */
+button {
+  font: 600 16px var(--police);
+  color: var(--encre);
+  background: var(--blanc);
+  border: 1.5px solid var(--encre);
+  border-radius: 6px;
+  padding: 10px 18px;
+  cursor: pointer;
+}
+
+button:hover { background: var(--papier); }
+
+button.principal {
+  background: var(--encre);
+  color: var(--papier);
+}
+
+button.principal:hover { background: #2c3757; }
+
+button:focus-visible,
+.onglet:focus-visible,
+input:focus-visible {
+  outline: 3px solid var(--laiton);
+  outline-offset: 2px;
+}
+
+/* ---------- Résultat ---------- */
+.sortie {
+  background: var(--encre);
+  color: var(--papier);
+  border-radius: 10px;
+  padding: 18px 20px;
+}
+
+.sortie-entete {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-weight: 600;
+  font-size: 15px;
+}
+
+.copier {
+  font-size: 14px;
+  padding: 5px 12px;
+  background: transparent;
+  color: var(--papier);
+  border-color: #47506d;
+}
+
+.copier:hover { background: #2c3757; }
+
+.info {
+  margin: 4px 0 0;
+  color: var(--laiton);
+  font-weight: 600;
+  min-height: 1.5em;
+}
+
+.resultat {
+  margin: 0;
+  font: 400 20px/1.7 var(--mono);
+  letter-spacing: 0.06em;
+  word-break: break-all;
+}
+
+.resultat.vide { color: #7c84a0; font: 16px var(--police); letter-spacing: 0; }
+.resultat.erreur { color: #f0a49c; font: 16px var(--police); letter-spacing: 0; }
+
+/* ---------- Bande de substitution ---------- */
+.bande {
+  margin-top: 28px;
+  display: grid;
+  grid-template-columns: repeat(13, 1fr);
+  border: 1.5px solid var(--encre);
+  border-radius: 6px;
+  overflow: hidden;
+  background: var(--blanc);
+}
+
+.bande div {
+  text-align: center;
+  font: 600 15px/1.2 var(--mono);
+  padding: 8px 0;
+  border-right: 1px solid var(--trait);
+  border-bottom: 1px solid var(--trait);
+}
+
+.bande span { display: block; color: var(--laiton); }
+
+/* ---------- Grille de transposition ---------- */
+.grille-cadre {
+  margin-top: 28px;
+  overflow-x: auto;
+}
+
+.grille {
+  border-collapse: collapse;
+  font: 600 17px var(--mono);
+  background: var(--blanc);
+}
+
+.grille th,
+.grille td {
+  width: 42px;
+  height: 40px;
+  text-align: center;
+  border: 1px solid var(--trait);
+}
+
+.grille th { background: var(--encre); color: var(--papier); }
+.grille th small { display: block; color: var(--laiton); font-size: 12px; }
+
+/* ---------- Remarque ---------- */
+.remarque {
+  margin: 0 0 28px;
+  padding: 14px 18px;
+  background: #F6EEDB;               /* laiton très clair */
+  border-left: 5px solid var(--laiton);
+  border-radius: 0 6px 6px 0;
+  max-width: 78ch;
+  font-size: 16px;
+}
+
+.remarque code {
+  font: 600 15px var(--mono);
+  background: var(--blanc);
+  padding: 1px 6px;
+  border-radius: 4px;
+}
+
+/* ---------- Mobile ---------- */
+@media (max-width: 760px) {
+  .entete { flex-direction: column-reverse; align-items: flex-start; padding-top: 28px; }
+  .atelier { grid-template-columns: 1fr; }
+  .onglet { padding: 10px 12px; font-size: 15px; }
+  .bande { grid-template-columns: repeat(7, 1fr); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .roue .int { transition: none; }
+}

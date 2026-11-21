@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Crypto Amlyn</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,600;12..96,800&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <header class="entete">
+    <div class="titre">
+      <h1>Crypto Amlyn</h1>
+      <p>Chiffrer, déchiffrer et casser les chiffrements classiques.</p>
+    </div>
+    <!-- Roue de César : l'anneau intérieur tourne selon la clé -->
+    <svg class="roue" id="roue" viewBox="-110 -110 220 220" aria-label="Roue de César"></svg>
+  </header>
+
+  <nav class="onglets" role="tablist">
+    <button class="onglet actif" data-panneau="cesar" role="tab">César</button>
+    <button class="onglet" data-panneau="substitution" role="tab">Substitution</button>
+    <button class="onglet" data-panneau="transposition" role="tab">Transposition</button>
+  </nav>
+
+  <main>
+    <aside class="remarque" role="note">
+      <strong>À savoir :</strong> seules les lettres A à Z sont chiffrées. Les accents, espaces
+      et la ponctuation sont retirés avant le chiffrement pour des raisons de sécurité :
+      on ne révèle pas la structure du message (longueur des mots, phrases, questions…).
+      Le message déchiffré revient donc sans eux : «&nbsp;Bonjour tout le monde&nbsp;!&nbsp;»&nbsp;→ <code>BONJOURTOUTLEMONDE</code>.
+    </aside>
+
+    <!-- ===================== CÉSAR ===================== -->
+    <section class="panneau actif" id="cesar">
+      <p class="explication">
+        Chaque lettre est décalée d'un même nombre de positions dans l'alphabet : c'est la clé.
+        La force brute essaie les 26 clés et garde celle dont le résultat ressemble le plus au
+        français (test du χ² sur la fréquence des lettres, plus les mots reconnus).
+      </p>
+
+      <div class="atelier">
+        <div class="zone">
+          <label for="cesarTexte">Message</label>
+          <textarea id="cesarTexte" placeholder="Écris ou colle un message…"></textarea>
+
+          <div class="reglage">
+            <label for="cesarCle">Clé</label>
+            <input type="range" id="cesarCle" min="0" max="25" value="3">
+            <output id="cesarCleValeur">3</output>
+          </div>
+
+          <div class="actions">
+            <button class="principal" id="cesarChiffrer">Chiffrer</button>
+            <button id="cesarDechiffrer">Déchiffrer</button>
+            <button id="cesarBrute">Force brute</button>
+          </div>
+        </div>
+
+        <div class="zone sortie">
+          <div class="sortie-entete">
+            <span>Résultat</span>
+            <button class="copier" data-cible="cesarResultat">Copier</button>
+          </div>
+          <p class="info" id="cesarInfo"></p>
+          <p class="resultat" id="cesarResultat">Le résultat s'affichera ici.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===================== SUBSTITUTION ===================== -->
+    <section class="panneau" id="substitution">
+      <p class="explication">
+        Chaque lettre est remplacée par une autre selon une clé : un alphabet mélangé.
+        Il y a 26! clés possibles, la force brute est donc impossible. Pour déchiffrer,
+        on fait le chemin inverse avec la même clé.
+      </p>
+
+      <div class="atelier">
+        <div class="zone">
+          <label for="subTexte">Message</label>
+          <textarea id="subTexte" placeholder="Écris ou colle un message…"></textarea>
+
+          <label for="subCle">Clé</label>
+          <div class="ligne-cle">
+            <input type="text" id="subCle" maxlength="26" spellcheck="false" autocomplete="off">
+            <button id="subGenerer">Générer</button>
+          </div>
+
+          <div class="actions">
+            <button class="principal" id="subChiffrer">Chiffrer</button>
+            <button id="subDechiffrer">Déchiffrer</button>
+          </div>
+        </div>
+
+        <div class="zone sortie">
+          <div class="sortie-entete">
+            <span>Résultat</span>
+            <button class="copier" data-cible="subResultat">Copier</button>
+          </div>
+          <p class="info" id="subInfo"></p>
+          <p class="resultat" id="subResultat">Le résultat s'affichera ici.</p>
+        </div>
+      </div>
+
+      <!-- Correspondance clair -> chiffré -->
+      <div class="bande" id="subBande" aria-label="Correspondance des lettres"></div>
+    </section>
+
+    <!-- ===================== TRANSPOSITION ===================== -->
+    <section class="panneau" id="transposition">
+      <p class="explication">
+        Les lettres ne changent pas, seul leur ordre change. On écrit le message en lignes sous
+        le mot-clé, puis on lit les colonnes dans l'ordre alphabétique des lettres du mot-clé.
+      </p>
+
+      <div class="atelier">
+        <div class="zone">
+          <label for="trTexte">Message</label>
+          <textarea id="trTexte" placeholder="Écris ou colle un message…"></textarea>
+
+          <label for="trCle">Mot-clé</label>
+          <input type="text" id="trCle" value="CRYPTO" spellcheck="false" autocomplete="off">
+
+          <div class="actions">
+            <button class="principal" id="trChiffrer">Chiffrer</button>
+            <button id="trDechiffrer">Déchiffrer</button>
+          </div>
+        </div>
+
+        <div class="zone sortie">
+          <div class="sortie-entete">
+            <span>Résultat</span>
+            <button class="copier" data-cible="trResultat">Copier</button>
+          </div>
+          <p class="info" id="trInfo"></p>
+          <p class="resultat" id="trResultat">Le résultat s'affichera ici.</p>
+        </div>
+      </div>
+
+      <!-- Grille de transposition -->
+      <div class="grille-cadre" id="trGrille"></div>
+    </section>
+  </main>
+
+
+  <script src="script.js"></script>
+  <script src="interface.js"></script>
+</body>
+</html>
