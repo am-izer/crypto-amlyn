@@ -24,6 +24,7 @@
     <button class="onglet actif" data-panneau="cesar" role="tab">César</button>
     <button class="onglet" data-panneau="substitution" role="tab">Substitution</button>
     <button class="onglet" data-panneau="transposition" role="tab">Transposition</button>
+    <button class="onglet" data-panneau="couches" role="tab">Multi-couches</button>
   </nav>
 
   <main>
@@ -114,7 +115,8 @@
     <section class="panneau" id="transposition">
       <p class="explication">
         Les lettres ne changent pas, seul leur ordre change. On écrit le message en lignes sous
-        le mot-clé, puis on lit les colonnes dans l'ordre alphabétique des lettres du mot-clé.
+        le mot-clé (la dernière ligne est complétée par des X), puis on lit les colonnes dans
+        l'ordre alphabétique des lettres du mot-clé.
       </p>
 
       <div class="atelier">
@@ -143,6 +145,58 @@
 
       <!-- Grille de transposition -->
       <div class="grille-cadre" id="trGrille"></div>
+    </section>
+
+    <!-- ===================== MULTI-COUCHES ===================== -->
+    <section class="panneau" id="couches">
+      <p class="explication">
+        Pour un message chiffré en plusieurs couches. Indique les couches dans l'ordre du
+        chiffrement : l'outil les retire dans l'ordre inverse. Si la clé César est inconnue,
+        il teste les 25 clés en retirant toutes les couches et garde le résultat le plus lisible.
+      </p>
+
+      <div class="atelier">
+        <div class="zone">
+          <label for="mcTexte">Message chiffré</label>
+          <textarea id="mcTexte" spellcheck="false">LZPZBYEZWLQZ</textarea>
+
+          <label>Ordre du chiffrement</label>
+          <ol class="ordre">
+            <li><select id="mcCouche1"></select></li>
+            <li><select id="mcCouche2"></select></li>
+            <li><select id="mcCouche3"></select></li>
+          </ol>
+
+          <label for="mcCleSub">Clé de substitution</label>
+          <input type="text" id="mcCleSub" value="DGURSJIBLVQWOTZMCEFKXYHNAP" maxlength="26" spellcheck="false" autocomplete="off">
+
+          <label for="mcCleTr">Mot-clé de transposition</label>
+          <input type="text" id="mcCleTr" value="HOMARD" spellcheck="false" autocomplete="off">
+
+          <label for="mcCleCesar">Clé César</label>
+          <div class="ligne-cle">
+            <input type="number" id="mcCleCesar" min="1" max="25" placeholder="vide = inconnue">
+          </div>
+
+          <div class="actions">
+            <button class="principal" id="mcDechiffrer">Déchiffrer</button>
+          </div>
+        </div>
+
+        <div class="zone sortie">
+          <div class="sortie-entete">
+            <span>Résultat</span>
+            <button class="copier" data-cible="mcResultat">Copier</button>
+          </div>
+          <p class="info" id="mcInfo"></p>
+          <p class="resultat" id="mcResultat">Le résultat s'affichera ici.</p>
+          <p class="flag" id="mcFlag"></p>
+          <details class="candidats" id="mcCandidats" hidden>
+            <summary>Autres clés testées</summary>
+            <ol id="mcListe"></ol>
+          </details>
+        </div>
+      </div>
     </section>
   </main>
 

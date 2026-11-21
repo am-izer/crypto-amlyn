@@ -295,6 +295,58 @@ input:focus-visible {
 .grille th { background: var(--encre); color: var(--papier); }
 .grille th small { display: block; color: var(--laiton); font-size: 12px; }
 
+/* ---------- Multi-couches ---------- */
+select {
+  font: 16px var(--police);
+  color: var(--encre);
+  background: var(--blanc);
+  border: 1.5px solid var(--trait);
+  border-radius: 6px;
+  padding: 8px 10px;
+  width: 100%;
+}
+
+input[type="number"] {
+  font: 16px var(--mono);
+  border: 1.5px solid var(--trait);
+  border-radius: 6px;
+  padding: 10px 12px;
+  width: 100%;
+}
+
+.ordre {
+  margin: 0 0 8px;
+  padding-left: 22px;
+  display: grid;
+  gap: 6px;
+  font-weight: 600;
+}
+
+.flag {
+  margin: 14px 0 0;
+  font: 600 22px var(--mono);
+  color: var(--laiton);
+}
+
+.flag:empty { display: none; }
+
+.candidats {
+  margin-top: 18px;
+  font-size: 14px;
+  color: #aab1c8;
+}
+
+.candidats summary { cursor: pointer; }
+
+.candidats ol {
+  margin: 8px 0 0;
+  padding-left: 0;
+  list-style: none;
+  font-family: var(--mono);
+  max-height: 180px;
+  overflow-y: auto;
+}
+
 /* ---------- Remarque ---------- */
 .remarque {
   margin: 0 0 28px;

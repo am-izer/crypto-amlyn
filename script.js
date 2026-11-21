@@ -48,19 +48,22 @@ function khiDeux(texte) {
 //  1. Statistique : on enlève le χ² (un texte proche du français perd peu de points)
 //  2. Mots : bonus pour chaque mot français trouvé (un mot long rapporte plus)
 function score(texte) {
+  // On ignore le bourrage de la transposition : une même lettre répétée à la fin (XXX)
+  texte = texte.replace(/(.)\1+$/, "");
   let points = -khiDeux(texte);
   for (let mot of MOTS_FRANCAIS) {
     let nb = texte.split(mot).length - 1;      // nombre d'apparitions du mot
-    points += nb * mot.length * mot.length * 10;
+    // Les mots de 2 lettres apparaissent souvent par hasard : bonus plus faible
+    points += nb * (mot.length === 2 ? 20 : mot.length * mot.length * 10);
   }
   return points;
 }
 
-// Essaie les 26 clés et garde seulement celle qui donne le meilleur score
+// Essaie les 25 clés (1 à 25) et garde seulement celle qui donne le meilleur score
 function forceBrute(texteChiffre) {
-  let meilleureCle = 0;
+  let meilleureCle = 1;
   let meilleurScore = -Infinity;
-  for (let k = 0; k < 26; k++) {
+  for (let k = 1; k <= 25; k++) {
     let s = score(cesar(texteChiffre, -k));
     if (s > meilleurScore) {
       meilleurScore = s;
@@ -110,11 +113,13 @@ function ordreColonnes(motCle) {
   return indices.sort((a, b) => motCle[a].localeCompare(motCle[b]) || a - b);
 }
 
-// On écrit le message ligne par ligne, on lit colonne par colonne
+// On écrit le message ligne par ligne (dernière ligne complétée par des X),
+// puis on lit colonne par colonne
 function transpositionChiffrer(texte, motCle) {
   motCle = motCle.trim().toUpperCase();
   texte = nettoyer(texte);
   let n = motCle.length;
+  while (texte.length % n !== 0) texte += "X";   // bourrage
   let resultat = "";
   for (let col of ordreColonnes(motCle)) {
     for (let i = col; i < texte.length; i += n) {
@@ -148,4 +153,35 @@ function transpositionDechiffrer(texte, motCle) {
     }
   }
   return resultat;
+}
+
+
+// ===================== DÉCHIFFREMENT EN PLUSIEURS COUCHES =====================
+// couches : la liste des couches dans l'ORDRE DU CHIFFREMENT, par exemple
+//   [{ type: "transposition", cle: "HOMARD" }, { type: "cesar" }, { type: "substitution", cle: "DGUR..." }]
+// On les retire dans l'ordre inverse : la dernière appliquée est la première retirée.
+function dechiffrerCouches(texte, couches, k) {
+  for (let couche of [...couches].reverse()) {
+    if (couche.type === "cesar")         texte = cesarDechiffrer(texte, k);
+    if (couche.type === "substitution")  texte = substitution(texte, couche.cle, false);
+    if (couche.type === "transposition") texte = transpositionDechiffrer(texte, couche.cle);
+  }
+  return texte;
+}
+
+// Clé César inconnue : pour chaque k de 1 à 25, on retire TOUTES les couches,
+// puis on note le résultat. Renvoie les candidats du plus probable au moins probable.
+function forceBruteCouches(texte, couches) {
+  let candidats = [];
+  for (let k = 1; k <= 25; k++) {
+    let message = dechiffrerCouches(texte, couches, k);
+    let s = score(message);
+    // Si la transposition est la 1re couche appliquée, le vrai message finit par
+    // les X de bourrage : bonus pour chaque X final (une mauvaise clé les change)
+    if (couches[0].type === "transposition") {
+      s += 10 * (message.length - message.replace(/X+$/, "").length);
+    }
+    candidats.push({ cle: k, message: message, score: s });
+  }
+  return candidats.sort((a, b) => b.score - a.score);
 }

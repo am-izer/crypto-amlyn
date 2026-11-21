@@ -191,5 +191,64 @@ $("trDechiffrer").addEventListener("click", () => {
 });
 
 
+// ---------- Multi-couches ----------
+const TYPES = { cesar: "César", substitution: "Substitution", transposition: "Transposition" };
+const DEFAUT = ["transposition", "cesar", "substitution"];   // ordre du binôme 32
+
+["mcCouche1", "mcCouche2", "mcCouche3"].forEach((id, i) => {
+  for (const type in TYPES) {
+    const option = new Option(TYPES[type], type);
+    $(id).append(option);
+  }
+  $(id).value = DEFAUT[i];
+});
+
+$("mcDechiffrer").addEventListener("click", () => {
+  $("mcFlag").textContent = "";
+  $("mcCandidats").hidden = true;
+  if (messageVide("mcTexte", "mcResultat")) return;
+
+  const types = ["mcCouche1", "mcCouche2", "mcCouche3"].map((id) => $(id).value);
+  if (new Set(types).size !== 3) {
+    afficherErreur("mcResultat", "Chaque technique doit apparaître une seule fois dans l'ordre.");
+    return;
+  }
+  if (!/^[A-Za-z]+$/.test($("mcCleTr").value.trim())) {
+    afficherErreur("mcResultat", "Le mot-clé de transposition doit contenir uniquement des lettres.");
+    return;
+  }
+
+  const couches = types.map((type) => ({
+    type: type,
+    cle: type === "substitution" ? $("mcCleSub").value : $("mcCleTr").value,
+  }));
+
+  try {
+    const k = $("mcCleCesar").value;
+    let message, info;
+
+    if (k === "") {
+      // Clé inconnue : force brute sur les 25 clés
+      const candidats = forceBruteCouches($("mcTexte").value, couches);
+      message = candidats[0].message;
+      info = "Clé César trouvée par force brute : " + candidats[0].cle;
+      tournerRoue(candidats[0].cle);
+
+      $("mcListe").innerHTML = candidats.slice(1)
+        .map((c) => `<li>k = ${String(c.cle).padStart(2)} · ${c.message}</li>`).join("");
+      $("mcCandidats").hidden = false;
+    } else {
+      message = dechiffrerCouches($("mcTexte").value, couches, +k);
+      info = "Déchiffré avec la clé César " + k;
+    }
+
+    afficher("mcResultat", message, info);
+    $("mcFlag").textContent = "Flag : BSD{" + message.slice(0, 8) + "}";
+  } catch (erreur) {
+    afficherErreur("mcResultat", erreur.message);
+  }
+});
+
+
 // Résultats vides au départ
 document.querySelectorAll(".resultat").forEach((r) => r.classList.add("vide"));
