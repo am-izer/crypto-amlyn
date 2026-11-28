@@ -185,3 +185,70 @@ function forceBruteCouches(texte, couches) {
   }
   return candidats.sort((a, b) => b.score - a.score);
 }
+
+
+// ===================== VIGENÈRE =====================
+// Convention du TP 2 : majuscules, accents retirés, mais espaces, chiffres et
+// ponctuation recopiés tels quels. La clé n'avance que sur les lettres.
+function sansAccents(texte) {
+  return texte.normalize("NFD").replace(/[̀-ͯ]/g, "").toUpperCase();
+}
+
+// sens = +1 pour chiffrer, -1 pour déchiffrer
+function vigenere(texte, cle, sens) {
+  cle = nettoyer(cle);
+  if (cle === "") throw new Error("La clé doit contenir au moins une lettre.");
+  let resultat = "";
+  let j = 0;                                   // position dans la clé
+  for (let c of sansAccents(texte)) {
+    let i = ALPHABET.indexOf(c);
+    if (i === -1) {
+      resultat += c;                           // espace, chiffre, ponctuation : recopié, la clé n'avance pas
+    } else {
+      let decalage = ALPHABET.indexOf(cle[j % cle.length]);
+      resultat += ALPHABET[(i + sens * decalage + 26) % 26];
+      j++;
+    }
+  }
+  return resultat;
+}
+
+function vigenereChiffrer(texte, cle)   { return vigenere(texte, cle, +1); }
+function vigenereDechiffrer(texte, cle) { return vigenere(texte, cle, -1); }
+
+
+// ===================== CASSEUR DE VIGENÈRE =====================
+// 1. On garde seulement les lettres.  2. On découpe en L colonnes.
+// 3. Dans chaque colonne, la lettre la plus fréquente est un E chiffré.
+// 4. Lettre de clé = (lettre la plus fréquente - E) mod 26.
+function casserVigenere(texte, L) {
+  let lettres = nettoyer(texte);
+  let cle = "";
+  for (let col = 0; col < L; col++) {
+    let compte = new Array(26).fill(0);
+    for (let i = col; i < lettres.length; i += L) {
+      compte[ALPHABET.indexOf(lettres[i])]++;
+    }
+    let plusFrequente = compte.indexOf(Math.max(...compte));
+    let decalage = (plusFrequente - ALPHABET.indexOf("E") + 26) % 26;
+    cle += ALPHABET[decalage];
+  }
+  return cle;
+}
+
+// Longueur inconnue : on essaie L = 2 à 10. Pour chaque L, on casse la clé,
+// on déchiffre et on mesure si le texte ressemble au français (χ² par lettre).
+// La bonne longueur est la plus petite qui donne un texte lisible.
+function casserVigenereSansLongueur(texte) {
+  let essais = [];
+  for (let L = 2; L <= 10; L++) {
+    let cle = casserVigenere(texte, L);
+    let clair = nettoyer(vigenereDechiffrer(texte, cle));
+    essais.push({ longueur: L, cle: cle, ecart: khiDeux(clair) / clair.length });
+  }
+  // "Lisible" : écart proche du meilleur obtenu (les multiples de la vraie
+  // longueur sont aussi lisibles, d'où le choix de la plus petite)
+  let meilleur = Math.min(...essais.map(e => e.ecart));
+  let choisi = essais.find(e => e.ecart <= meilleur * 1.5);
+  return { choisi: choisi, essais: essais };
+}

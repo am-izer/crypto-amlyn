@@ -4,13 +4,14 @@ const $ = (id) => document.getElementById(id);
 
 function afficher(id, texte, info = "") {
   $(id).textContent = texte;
-  $(id).className = "resultat";
+  $(id).classList.remove("vide", "erreur");
   $(id.replace("Resultat", "Info")).textContent = info;
 }
 
 function afficherErreur(id, message) {
   $(id).textContent = message;
-  $(id).className = "resultat erreur";
+  $(id).classList.remove("vide");
+  $(id).classList.add("erreur");
   $(id.replace("Resultat", "Info")).textContent = "";
 }
 
@@ -30,6 +31,8 @@ document.querySelectorAll(".onglet").forEach((onglet) => {
     document.querySelectorAll(".onglet, .panneau").forEach((el) => el.classList.remove("actif"));
     onglet.classList.add("actif");
     $(onglet.dataset.panneau).classList.add("actif");
+    // La remarque ne concerne que les techniques du TP 1 (Vigenère garde la ponctuation)
+    $("remarque").hidden = onglet.dataset.panneau === "vigenere";
   });
 });
 
@@ -247,6 +250,46 @@ $("mcDechiffrer").addEventListener("click", () => {
   } catch (erreur) {
     afficherErreur("mcResultat", erreur.message);
   }
+});
+
+
+// ---------- Vigenère ----------
+function lancerVigenere(chiffrer) {
+  if (messageVide("vigTexte", "vigResultat")) return;
+  $("vigEssais").hidden = true;
+  try {
+    const cle = $("vigCle").value;
+    const r = chiffrer ? vigenereChiffrer($("vigTexte").value, cle) : vigenereDechiffrer($("vigTexte").value, cle);
+    afficher("vigResultat", r, (chiffrer ? "Chiffré" : "Déchiffré") + " avec la clé " + nettoyer(cle));
+  } catch (erreur) {
+    afficherErreur("vigResultat", erreur.message);
+  }
+}
+
+$("vigChiffrer").addEventListener("click", () => lancerVigenere(true));
+$("vigDechiffrer").addEventListener("click", () => lancerVigenere(false));
+
+$("vigCasser").addEventListener("click", () => {
+  $("vigEssais").hidden = true;
+  if (messageVide("vigTexte", "vigResultat")) return;
+  const texte = $("vigTexte").value;
+  const L = $("vigLongueur").value;
+  let cle, info;
+
+  if (L === "") {
+    const r = casserVigenereSansLongueur(texte);
+    cle = r.choisi.cle;
+    info = "Longueur trouvée : " + r.choisi.longueur + " · clé trouvée : " + cle;
+    $("vigListe").innerHTML = r.essais
+      .map((e) => `<li>L = ${String(e.longueur).padStart(2)} · ${e.cle.padEnd(10)} · écart ${e.ecart.toFixed(2)}</li>`).join("");
+    $("vigEssais").hidden = false;
+  } else {
+    cle = casserVigenere(texte, +L);
+    info = "Clé trouvée : " + cle;
+  }
+
+  $("vigCle").value = cle;
+  afficher("vigResultat", vigenereDechiffrer(texte, cle), info);
 });
 
 

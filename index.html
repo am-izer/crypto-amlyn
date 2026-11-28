@@ -25,10 +25,11 @@
     <button class="onglet" data-panneau="substitution" role="tab">Substitution</button>
     <button class="onglet" data-panneau="transposition" role="tab">Transposition</button>
     <button class="onglet" data-panneau="couches" role="tab">Multi-couches</button>
+    <button class="onglet" data-panneau="vigenere" role="tab">Vigenère</button>
   </nav>
 
   <main>
-    <aside class="remarque" role="note">
+    <aside class="remarque" id="remarque" role="note">
       <strong>À savoir :</strong> seules les lettres A à Z sont chiffrées. Les accents, espaces
       et la ponctuation sont retirés avant le chiffrement pour des raisons de sécurité :
       on ne révèle pas la structure du message (longueur des mots, phrases, questions…).
@@ -194,6 +195,50 @@
           <details class="candidats" id="mcCandidats" hidden>
             <summary>Autres clés testées</summary>
             <ol id="mcListe"></ol>
+          </details>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===================== VIGENÈRE ===================== -->
+    <section class="panneau" id="vigenere">
+      <p class="explication">
+        Un César dont le décalage change à chaque lettre, selon un mot-clé répété.
+        Ici, espaces, chiffres et ponctuation sont recopiés tels quels et la clé n'avance
+        que sur les lettres. Le casseur retrouve la clé : dans chaque colonne, la lettre
+        la plus fréquente est un E chiffré.
+      </p>
+
+      <div class="atelier">
+        <div class="zone">
+          <label for="vigTexte">Message</label>
+          <textarea id="vigTexte" placeholder="Écris ou colle un message…"></textarea>
+
+          <label for="vigCle">Clé</label>
+          <input type="text" id="vigCle" value="CLE" spellcheck="false" autocomplete="off">
+
+          <div class="actions">
+            <button class="principal" id="vigChiffrer">Chiffrer</button>
+            <button id="vigDechiffrer">Déchiffrer</button>
+          </div>
+
+          <label for="vigLongueur">Casser sans la clé · longueur de la clé</label>
+          <div class="ligne-cle">
+            <input type="number" id="vigLongueur" min="1" max="20" placeholder="vide = inconnue (essai de 2 à 10)">
+            <button id="vigCasser">Casser</button>
+          </div>
+        </div>
+
+        <div class="zone sortie">
+          <div class="sortie-entete">
+            <span>Résultat</span>
+            <button class="copier" data-cible="vigResultat">Copier</button>
+          </div>
+          <p class="info" id="vigInfo"></p>
+          <p class="resultat texte-long" id="vigResultat">Le résultat s'affichera ici.</p>
+          <details class="candidats" id="vigEssais" hidden>
+            <summary>Longueurs essayées</summary>
+            <ol id="vigListe"></ol>
           </details>
         </div>
       </div>
